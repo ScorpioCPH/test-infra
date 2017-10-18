@@ -329,7 +329,11 @@ func setReleaseFromGci(image string) error {
 func (e extractStrategy) Extract(project, zone string) error {
 	switch e.mode {
 	case local:
-		url := k8s("kubernetes", "_output", "gcs-stage")
+		url, err := k8s("kubernetes", "_output", "gcs-stage")
+		if err != nil {
+			return err
+		}
+
 		files, err := ioutil.ReadDir(url)
 		if err != nil {
 			return err

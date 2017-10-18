@@ -75,8 +75,13 @@ func (b *buildStrategy) Build() error {
 		return fmt.Errorf("Unknown build strategy: %v", b)
 	}
 
+	path, err := k8s("kubernetes")
+	if err != nil {
+		return err
+	}
+
 	// TODO(fejta): FIX ME
 	// The build-release script needs stdin to ask the user whether
 	// it's OK to download the docker image.
-	return finishRunning(exec.Command("make", "-C", k8s("kubernetes"), target))
+	return finishRunning(exec.Command("make", "-C", path, target))
 }

@@ -62,12 +62,17 @@ func init() {
 }
 
 // Returns $GOPATH/src/k8s.io/...
-func k8s(parts ...string) string {
-	p := []string{os.Getenv("GOPATH"), "src", "k8s.io"}
+func k8s(parts ...string) (string, error) {
+	gp := os.Getenv("GOPATH")
+	if gp == "" {
+		return "", fmt.Errorf("Error: GOPATH not set, please check your golang env setting")
+	}
+
+	p := []string{gp, "src", "k8s.io"}
 	for _, a := range parts {
 		p = append(p, a)
 	}
-	return filepath.Join(p...)
+	return filepath.Join(p...), nil
 }
 
 // append(errs, err) if err != nil

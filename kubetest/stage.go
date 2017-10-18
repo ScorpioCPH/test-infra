@@ -61,7 +61,11 @@ func (s *stageStrategy) Enabled() bool {
 // Stage the release build to GCS.
 // Essentially release/push-build.sh --bucket=B --ci? --gcs-suffix=S --federation? --noupdatelatest
 func (s *stageStrategy) Stage(fed bool) error {
-	name := k8s("release", "push-build.sh")
+	name, err := k8s("release", "push-build.sh")
+	if err != nil {
+		return err
+	}
+
 	b := s.bucket
 	if strings.HasPrefix(b, "gs://") {
 		b = b[len("gs://"):]
@@ -89,6 +93,10 @@ func (s *stageStrategy) Stage(fed bool) error {
 	}
 
 	cmd := exec.Command(name, args...)
-	cmd.Dir = k8s("kubernetes")
+	cmd.Dir, err = k8s("kubernetes")
+	if err != nil {
+		return err
+	}
+
 	return finishRunning(cmd)
 }
